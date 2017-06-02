@@ -33,18 +33,13 @@ int main()
 {
   uWS::Hub h;
 
-  PID pid_steer;
+  // steering PID controller
+  PID pid_s;
   // TODO: Initialize the pid variable.
   //pid.Init(0.03, 0.5, 0.10);
-  pid_steer.Init(0.0, 0.0, 0.0);
-  std::vector<double> dp = {1,1,1};
-  int step = 1, param_index = 0;
-  // number of steps to allow changes to settle, then to evaluate error
-  int n_settle_steps = 100, n_eval_steps = 100;
-  double total_error, best_error = std::numeric_limits<double>::max();
-  bool tried_adding, tried_subtracting;
+  pid_s.Init(0.001, 0.001, 0.001);
 
-  h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
+  h.onMessage([&pid_s](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -67,34 +62,25 @@ int main()
           * another PID controller to control the speed!
           */
 
-          // update total error only if we're past number of settle steps
-          if (step % (n_settle_steps + n_eval_steps) > n_settle_steps){
-            total_error += pow(cte,2);
-          }
           // update error and calculate steer_value at each step
-          pid_steer.UpdateError(cte);
-          steer_value = - pid_steer.Kp * pid_steer.p_error 
-                        - pid_steer.Kd * pid_steer.d_error 
-                        - pid_steer.Ki * pid_steer.i_error;
-          
-          // last step in twiddle loop
-          if (step % (n_settle_steps + n_eval_steps) == 0){
-            if (total_error < best_error) {
-              best_error = total_error;
-            }
-
-
-          }
-          step++;
+          pid_s.UpdateError(cte);
+          steer_value = - pid_s.Kp * pid_s.p_error 
+                        - pid_s.Kd * pid_s.d_error 
+                        - pid_s.Ki * pid_s.i_error;
 
           // DEBUG
-          std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
-
+          //std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
+          if (pid_s.step % 100 == 0) {
+            std::cout << "step: " << pid_s.step << std::endl;
+            std::cout << "Kp: " << pid_s.Kp << std::endl;
+            std::cout << "Kd: " << pid_s.Kd << std::endl;
+            std::cout << "Ki: " << pid_s.Ki << std::endl;
+          }
           json msgJson;
           msgJson["steering_angle"] = steer_value;
           msgJson["throttle"] = 0.3;
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
-          std::cout << msg << std::endl;
+          //std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         }
       } else {
