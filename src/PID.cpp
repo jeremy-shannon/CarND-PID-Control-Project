@@ -19,11 +19,11 @@ void PID::Init(double Kp, double Ki, double Kd) {
     p_error = d_error = i_error = 0.0;
 
     // Twiddling parameters
-    dp = {0.01,0.01,0.01};
+    dp = {0.5*Kp,0.5*Kd,0.5*Ki};
     step = 1;
     param_index = 0;
-    n_settle_steps = 50;
-    n_eval_steps = 50;
+    n_settle_steps = 1000;
+    n_eval_steps = 1000;
     total_error = 0;
     best_error = std::numeric_limits<double>::max();
     tried_adding = false; 
@@ -31,7 +31,11 @@ void PID::Init(double Kp, double Ki, double Kd) {
 }
 
 void PID::UpdateError(double cte) {
-    d_error = p_error - cte;
+    if (step == 1) {
+        // to get correct initial d_error
+        p_error = cte;
+    }
+    d_error = cte - p_error;
     p_error = cte;
     i_error += cte;
 
