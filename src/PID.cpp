@@ -19,11 +19,11 @@ void PID::Init(double Kp, double Ki, double Kd) {
     p_error = d_error = i_error = 0.0;
 
     // Twiddling parameters
-    dp = {0.5*Kp,0.5*Kd,0.5*Ki};
+    dp = {0.1*Kp,0.1*Kd,0.1*Ki};
     step = 1;
-    param_index = 0;
-    n_settle_steps = 1000;
-    n_eval_steps = 1000;
+    param_index = 2;  // this will wrao back to 0 after the first twiddle loop
+    n_settle_steps = 100;
+    n_eval_steps = 2000;
     total_error = 0;
     best_error = std::numeric_limits<double>::max();
     tried_adding = false; 
@@ -46,16 +46,21 @@ void PID::UpdateError(double cte) {
 
     // last step in twiddle loop
     if (step % (n_settle_steps + n_eval_steps) == 0){
+        cout << "step: " << step << endl;
         cout << "total error: " << total_error << endl;
         cout << "best error: " << best_error << endl;
         if (total_error < best_error) {
+            cout << "improvement!" << endl;
             best_error = total_error;
-            total_error = 0;
-            dp[param_index] *= 1.1;
-            tried_adding = tried_subtracting = false;
+            if (step !=  n_settle_steps + n_eval_steps) {
+                // don't do this if it's the first time through
+                dp[param_index] *= 1.1;            
+            }
+            // next parameter
             param_index = (param_index + 1) % 3;
+            tried_adding = tried_subtracting = false;
         }
-        else if (!tried_adding && !tried_subtracting) {
+        if (!tried_adding && !tried_subtracting) {
             // try adding dp[i] to params[i]
             AddToParameterAtIndex(param_index, dp[param_index]);
             tried_adding = true;
@@ -69,9 +74,13 @@ void PID::UpdateError(double cte) {
             // set it back, reduce dp[i], move on to next parameter
             AddToParameterAtIndex(param_index, dp[param_index]);      
             dp[param_index] *= 0.9;
+            // next parameter
             param_index = (param_index + 1) % 3;
             tried_adding = tried_subtracting = false;
         }
+        total_error = 0;
+        cout << "new parameters" << endl;
+        cout << "P: " << Kp << ", I: " << Ki << ", D: " << Kd << endl;        
     }
     step++;
 }
