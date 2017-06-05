@@ -10,6 +10,12 @@ The purpose of this project was to "build a PID controller and tune the PID hype
 
 
 
+[Final Parameters](https://github.com/jeremy-shannon/CarND-PID-Control-Project/blob/master/demo_videos/PID09%20-%20final%20settings.m4v)
+
+[I Parameter Removed](https://github.com/jeremy-shannon/CarND-PID-Control-Project/blob/master/demo_videos/PID10%20-%20zero%20i.m4v)
+
+[D Parameter Removed](https://github.com/jeremy-shannon/CarND-PID-Control-Project/blob/master/demo_videos/PID11%20-%20zero%20d.m4v)
+
 
 - *Describe how the final hyperparameters were chosen.*
 
