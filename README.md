@@ -1,7 +1,21 @@
-# CarND-Controls-PID
-Self-Driving Car Engineer Nanodegree Program
+# **Udacity Self-Driving Car Enginer Nanodegree - *PID Control Project***
+
+## Introduction
+
+The purpose of this project was to "build a PID controller and tune the PID hyperparameters by applying the general processing flow as described in the lessons," and to "test your solution on the simulator!" The simulator provides cross-track error (CTE), speed, and steering angle data via local websocket. The PID (proportional/integral/differential) controller must respond with steering and throttle commands to drive the car reliably around the simulator track.
+
+## Rubric Discussion Points
+
+- *Describe the effect each of the P, I, D components had in your implementation.*
+
+
+
+
+- *Describe how the final hyperparameters were chosen.*
 
 ---
+
+# **Original Udacity README**
 
 ## Dependencies
 
