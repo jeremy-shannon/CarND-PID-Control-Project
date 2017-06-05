@@ -37,11 +37,22 @@ int main()
   PID pid_s, pid_t;
   // TODO: Initialize the pid variable.
   //pid.Init(0.03, 0.5, 0.10);
+
+
   //pid_s.Init(0.085, 0.0003, 1.35);
   //pid_t.Init(0.2, 0.0000, 0.01);
+
   // twiddle update - error: 803.649
-  pid_s.Init(0.134611 0.000276054, 3.0903);
-  pid_t.Init(0.316731, 0.0000, 0.0228911);
+  //pid_s.Init(0.134611 0.000276054, 3.0903);
+  //pid_t.Init(0.316731, 0.0000, 0.0228911);
+
+  // twiddle update - error: 782.494 - max throttle 0.7
+  // pid_s.Init(0.134611, 0.000270736, 3.05349);
+  // pid_t.Init(0.316731, 0.0000, 0.0226185);
+
+  // twiddle update - error: ?? - max throttle 0.8
+  pid_s.Init(0.134611, 0.000270736, 3.05349);
+  pid_t.Init(0.316731, 0.0000, 0.0226185);
 
   h.onMessage([&pid_s, &pid_t](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
@@ -73,8 +84,9 @@ int main()
                         - pid_s.Ki * pid_s.i_error;
 
           // update error and calculate throttle_value at each step
-          pid_t.UpdateError(fabs(cte));
-          throttle_value = 0.7 - pid_t.Kp * pid_t.p_error
+          pid_t.UpdateError(fabs(cte));     // |cte|
+          //pid_t.UpdateError(pow(cte, 2));   // cte^2
+          throttle_value = 0.75 - pid_t.Kp * pid_t.p_error
                         - pid_t.Kd * pid_t.d_error 
                         - pid_t.Ki * pid_t.i_error;
 

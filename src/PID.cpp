@@ -19,6 +19,7 @@ void PID::Init(double Kp, double Ki, double Kd) {
     p_error = d_error = i_error = 0.0;
 
     // Twiddling parameters
+    yes_i_wanna_twiddle = false;
     dp = {0.1*Kp,0.1*Kd,0.1*Ki};
     step = 1;
     param_index = 2;  // this will wrao back to 0 after the first twiddle loop
@@ -44,8 +45,8 @@ void PID::UpdateError(double cte) {
         total_error += pow(cte,2);
     }
 
-    // last step in twiddle loop
-    if (step % (n_settle_steps + n_eval_steps) == 0){
+    // last step in twiddle loop... twiddle it?
+    if (yes_i_wanna_twiddle && step % (n_settle_steps + n_eval_steps) == 0){
         cout << "step: " << step << endl;
         cout << "total error: " << total_error << endl;
         cout << "best error: " << best_error << endl;

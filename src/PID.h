@@ -27,7 +27,7 @@ public:
   // number of steps to allow changes to settle, then to evaluate error
   int n_settle_steps, n_eval_steps;
   double total_error, best_error;
-  bool tried_adding, tried_subtracting;
+  bool tried_adding, tried_subtracting, yes_i_wanna_twiddle;
 
   /*
   * Constructor
